@@ -270,6 +270,11 @@ download_ventoy() {
 
     log "Descarga completada."
 
+    # TODO: verify SHA256 checksum against GitHub release asset before extracting
+    # info "Verificando checksum SHA256..."
+    # expected_hash=$(curl -fsSL "$url.sha256" | awk '{print $1}')
+    # echo "$expected_hash  $file" | sha256sum -c || { err "SHA256 mismatch!"; exit 1; }
+
     info "Extrayendo Ventoy..."
     tar -xzf "$file"
 
