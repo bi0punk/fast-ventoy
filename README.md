@@ -66,7 +66,7 @@ sudo apt update && sudo apt install -y curl wget tar
 ## Instalación
 
 ```bash
-git clone https://github.com/tu-usuario/fast-ventoy.git
+git clone https://github.com/bi0punk/fast-ventoy.git
 cd fast-ventoy
 chmod +x fast_ventoy.sh
 ```
