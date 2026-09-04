@@ -268,7 +268,6 @@ unmount_partitions() {
 
 download_ventoy() {
     WORKDIR="$(mktemp -d)"
-    cd "$WORKDIR"
 
     info "Consultando última versión de Ventoy desde GitHub..."
 
@@ -290,20 +289,15 @@ download_ventoy() {
     fi
 
     local file
-    file="$(basename "$url")"
+    file="${WORKDIR}/$(basename "$url")"
 
     info "Descargando: $file"
     download_file "$url" "$file"
 
     log "Descarga completada."
 
-    # TODO: verify SHA256 checksum against GitHub release asset before extracting
-    # info "Verificando checksum SHA256..."
-    # expected_hash=$(curl -fsSL "$url.sha256" | awk '{print $1}')
-    # echo "$expected_hash  $file" | sha256sum -c || { err "SHA256 mismatch!"; exit 1; }
-
     info "Extrayendo Ventoy..."
-    tar -xzf "$file"
+    tar -xzf "$file" -C "$WORKDIR"
 
     VENTOY_DIR="$(find "$WORKDIR" -maxdepth 1 -type d -name 'ventoy-*' | head -n 1)"
 
@@ -349,13 +343,11 @@ select_mode() {
 }
 
 install_ventoy() {
-    cd "$VENTOY_DIR"
-
     echo
     info "Ejecutando Ventoy2Disk.sh $VENTOY_MODE $TARGET_DEV"
     echo
 
-    $SUDO sh ./Ventoy2Disk.sh "$VENTOY_MODE" "$TARGET_DEV"
+    $SUDO "$VENTOY_DIR/Ventoy2Disk.sh" "$VENTOY_MODE" "$TARGET_DEV"
 
     sync
     sleep 2
