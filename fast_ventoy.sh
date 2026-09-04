@@ -63,7 +63,18 @@ err() {
 
 pause() {
     echo
-    read -rp "Presiona ENTER para continuar..."
+    read -rp "Presiona ENTER para continuar..." || true
+}
+
+read_timed() {
+    local prompt="$1"
+    local varname="$2"
+    local timeout="${3:-120}"
+    read -rp -t "$timeout" "$prompt" "$varname" || {
+        warn "Tiempo de espera agotado (${timeout}s). Saliendo."
+        cleanup
+        exit 1
+    }
 }
 
 need_cmd() {
@@ -153,7 +164,7 @@ select_device() {
         warn "No se detectaron dispositivos USB/removibles automáticamente."
         show_all_disks
         echo "Puedes escribir manualmente el dispositivo, por ejemplo: /dev/sdb"
-        read -rp "Dispositivo destino: " TARGET_DEV
+        read_timed "Dispositivo destino: " TARGET_DEV
     else
         local i=1
         for dev in "${devices[@]}"; do
@@ -165,14 +176,14 @@ select_device() {
         echo "[m] Escribir manualmente otro dispositivo"
         echo "[q] Salir"
         echo
-        read -rp "Selecciona una opción: " opt
+        read_timed "Selecciona una opción: " opt
 
         case "$opt" in
             q|Q)
                 exit 0
                 ;;
             m|M)
-                read -rp "Dispositivo destino, ejemplo /dev/sdb: " TARGET_DEV
+                read_timed "Dispositivo destino, ejemplo /dev/sdb: " TARGET_DEV
                 ;;
             *)
                 if ! [[ "$opt" =~ ^[0-9]+$ ]]; then
@@ -222,7 +233,7 @@ confirm_device() {
     echo "Para confirmar, escribe exactamente:"
     echo -e "  ${BOLD}SI BORRAR $TARGET_DEV${RESET}"
     echo
-    read -rp "> " confirmation
+    read_timed "> " confirmation
 
     if [[ "$confirmation" != "SI BORRAR $TARGET_DEV" ]]; then
         err "Confirmación incorrecta. No se hizo ningún cambio."
@@ -315,7 +326,7 @@ select_mode() {
     echo "[3] Actualizar Ventoy si ya existe en el USB"
     echo "[q] Salir"
     echo
-    read -rp "Selecciona una opción: " mode
+    read_timed "Selecciona una opción: " mode
 
     case "$mode" in
         1)
