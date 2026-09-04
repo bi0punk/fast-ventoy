@@ -31,7 +31,7 @@ Script Bash interactivo para crear un USB booteable con Ventoy en Linux. Detecta
 ## Stack
 
 - **Bash** (shell script)
-- Dependencias del sistema: `lsblk`, `awk`, `grep`, `sed`, `tar`, `sha256sum`, `curl` o `wget`
+- Dependencias del sistema: `lsblk`, `awk`, `grep`, `sed`, `tar`, `sha256sum`, `jq`, `curl` o `wget`
 - Sin librerías externas
 
 ## Estructura
@@ -132,10 +132,9 @@ GitHub Actions ejecuta ShellCheck en cada push y pull request:
 ## Limitaciones / Roadmap
 
 - Solo Linux (no soporta macOS ni Windows)
-- No verifica checksum SHA256 automáticamente contra el release de GitHub (actualmente comentado)
 - No soporte para descarga manual de versiones específicas
 - Sin test automatizados más allá de ShellCheck
-- Futuro: verificación SHA256, selección de versión específica, modo no-interactivo, soporte para múltiples USBs en paralelo
+- Futuro: selección de versión específica, modo no-interactivo, soporte para múltiples USBs en paralelo
 
 ## Licencia
 

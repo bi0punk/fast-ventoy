@@ -70,6 +70,7 @@ read_timed() {
     local prompt="$1"
     local varname="$2"
     local timeout="${3:-120}"
+    # shellcheck disable=SC2229
     read -rp -t "$timeout" "$prompt" "$varname" || {
         warn "Tiempo de espera agotado (${timeout}s). Saliendo."
         cleanup
@@ -155,8 +156,7 @@ get_usb_devices() {
 }
 
 select_device() {
-    local devices=()
-    mapfile -t devices < <(get_usb_devices)
+    local devices=() opt i
 
     echo -e "${BOLD}Pendrives / discos removibles detectados:${RESET}"
     echo
@@ -224,6 +224,7 @@ select_device() {
 }
 
 confirm_device() {
+    local confirmation
     echo -e "${RED}${BOLD}ADVERTENCIA FINAL:${RESET}"
     echo "El dispositivo seleccionado es:"
     echo
@@ -299,7 +300,8 @@ download_ventoy() {
 
     info "Verificando checksum SHA256..."
     local sha256_url="${url}.sha256"
-    local sha256_file="${WORKDIR}/$(basename "$url").sha256"
+    local sha256_file
+    sha256_file="${WORKDIR}/$(basename "$url").sha256"
     download_file "$sha256_url" "$sha256_file" || warn "No se pudo descargar sha256, verificación omitida."
     if [[ -f "$sha256_file" ]]; then
         echo "$(cat "$sha256_file")  $file" | sha256sum -c || { err "SHA256 mismatch!"; exit 1; }
@@ -324,6 +326,7 @@ download_ventoy() {
 }
 
 select_mode() {
+    local mode
     echo
     echo -e "${BOLD}Modo de operación:${RESET}"
     echo
