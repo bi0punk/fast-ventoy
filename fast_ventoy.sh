@@ -108,6 +108,10 @@ require_root_or_sudo() {
             err "Este script necesita sudo o ejecutarse como root."
             exit 1
         fi
+        if ! sudo -v >/dev/null 2>&1; then
+            err "sudo no funciona. Verifica que tu usuario tenga permisos de sudo."
+            exit 1
+        fi
         SUDO="sudo"
     fi
 }
