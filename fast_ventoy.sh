@@ -347,7 +347,11 @@ install_ventoy() {
     info "Ejecutando Ventoy2Disk.sh $VENTOY_MODE $TARGET_DEV"
     echo
 
-    $SUDO "$VENTOY_DIR/Ventoy2Disk.sh" "$VENTOY_MODE" "$TARGET_DEV"
+    $SUDO "$VENTOY_DIR/Ventoy2Disk.sh" "$VENTOY_MODE" "$TARGET_DEV" || {
+        err "Ventoy2Disk.sh falló con código de salida $?"
+        echo "El dispositivo podría estar en un estado inconsistente."
+        exit 1
+    }
 
     sync
     sleep 2
