@@ -42,6 +42,8 @@ cleanup() {
     fi
 }
 trap cleanup EXIT
+trap 'warn "Interrumpido por el usuario (SIGINT)."; cleanup; exit 130' SIGINT
+trap 'warn "Señal recibida (SIGTERM)."; cleanup; exit 143' SIGTERM
 
 log() {
     echo -e "${GREEN}[OK]${RESET} $*"
