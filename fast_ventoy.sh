@@ -91,6 +91,7 @@ check_dependencies() {
     need_cmd sed
     need_cmd tar
     need_cmd sha256sum
+    need_cmd jq
 
     if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
         err "Necesitas curl o wget instalado."
@@ -279,7 +280,7 @@ download_ventoy() {
     fi
 
     local url
-    url="$(echo "$api_json" | grep -Eo 'https://[^"]+ventoy-[0-9.]+-linux\.tar\.gz' | head -n 1)"
+    url="$(echo "$api_json" | jq -r '.assets[] | select(.name | test("ventoy-[0-9]+-linux\\.tar\\.gz$")) | .browser_download_url' | head -n 1)"
 
     if [[ -z "$url" ]]; then
         err "No pude obtener automáticamente el enlace de Ventoy."
@@ -295,6 +296,17 @@ download_ventoy() {
     download_file "$url" "$file"
 
     log "Descarga completada."
+
+    info "Verificando checksum SHA256..."
+    local sha256_url="${url}.sha256"
+    local sha256_file="${WORKDIR}/$(basename "$url").sha256"
+    download_file "$sha256_url" "$sha256_file" || warn "No se pudo descargar sha256, verificación omitida."
+    if [[ -f "$sha256_file" ]]; then
+        echo "$(cat "$sha256_file")  $file" | sha256sum -c || { err "SHA256 mismatch!"; exit 1; }
+        log "Checksum SHA256 verificado."
+    else
+        warn "Archivo sha256 no disponible. Continuando sin verificación."
+    fi
 
     info "Extrayendo Ventoy..."
     tar -xzf "$file" -C "$WORKDIR"
